@@ -1,7 +1,5 @@
 package com.example.exoplayer_glide.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,25 +28,32 @@ public class PlayerModel {
         for (int index = 0; index < playMusicList.size(); index++) {
             MusicModel musicModel = playMusicList.get(index);
             boolean isPlaying = index == currentPosition;
-            MusicModel newItem = new MusicModel(
-                    musicModel.getId(),
-                    musicModel.getTrack(),
-                    musicModel.getStreamUrl(),
-                    musicModel.getArtist(),
-                    musicModel.getCoverUrl(),
-                    isPlaying
-            );
-            adapterModels.add(newItem);
+
+            //이부분에서 객체를 한번 더 생성 하면서 오류 발생
+            adapterModels.add(musicModel);  //mapper에 담은 리스트를 그대로 가져와야함 -> 그래야 같은 값
+
+//            MusicModel newItem = new MusicModel(
+//                    musicModel.getId(),
+//                    musicModel.getTrack(),
+//                    musicModel.getStreamUrl(),
+//                    musicModel.getArtist(),
+//                    musicModel.getCoverUrl(),
+//                    isPlaying
+//            );
+//            adapterModels.add(newItem);
         }
         return adapterModels;
     }
 
     public void updateCurrentPosition(MusicModel musicModel) {
-//         currentPosition = playMusicList.indexOf(musicModel);
+         currentPosition = playMusicList.indexOf(musicModel);
 
-        Log.d("!@!@", "");
-
-
+//        for (int i = 0; i < playMusicList.size(); i++) {
+//            if (playMusicList.get(i).getId() == musicModel.getId()) {
+//                currentPosition = i;
+//                return;
+//            }
+//        }
 
 
     }

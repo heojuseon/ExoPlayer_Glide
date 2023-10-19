@@ -250,8 +250,10 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (model.getCurrentPosition() == -1) return;
+
                 int playListGroupVisibility = playListGroup.getVisibility();
                 int playerViewGroupVisibility = playerViewGroup.getVisibility();
+
                 if (playListGroupVisibility == View.VISIBLE) {
                     playListGroup.setVisibility(View.INVISIBLE);
                     playerViewGroup.setVisibility(View.VISIBLE);
@@ -293,26 +295,6 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setMusicList(List<MusicModel> modelList) {
-//        if (player == null) return;
-////        player = new ExoPlayer.Builder(requireContext()).build();
-//        playerView.setPlayer(player);
-//        player.addListener(new Player.Listener() {
-//            @Override
-//            public void onIsPlayingChanged(boolean isPlaying) {
-//                Player.Listener.super.onIsPlayingChanged(isPlaying);
-//            }
-//        });
-//
-//        MediaItem[] mediaItems = new MediaItem[modelList.size()];
-//        for (int i = 0; i < modelList.size(); i++) {
-//            MediaItem mediaItem = new MediaItem.Builder()
-//                    .setMediaId(String.valueOf(modelList.get(i).getId()))
-//                    .setUri(modelList.get(i).getStreamUrl())
-//                    .build();
-//            mediaItems[i] = mediaItem;
-//        }
-//        player.addMediaItems(Arrays.asList(mediaItems));
-//        player.prepare();
 
         if (player != null) {
             MediaItem[] mediaItems = new MediaItem[modelList.size()];

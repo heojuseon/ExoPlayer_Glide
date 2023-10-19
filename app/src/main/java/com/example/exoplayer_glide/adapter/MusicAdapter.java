@@ -21,6 +21,8 @@ import com.example.exoplayer_glide.model.MusicModel;
 public class MusicAdapter extends ListAdapter<MusicModel, MusicAdapter.ViewHolder> {
     private final OnMusicItemClickListener callback;
 
+    private int select = -1;
+
 
     public interface OnMusicItemClickListener {
         void onMusicItemClicked(MusicModel music);
@@ -62,9 +64,25 @@ public class MusicAdapter extends ListAdapter<MusicModel, MusicAdapter.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callback.onMusicItemClicked(music);
+                    int position = getBindingAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        // 이전에 선택된 아이템의 배경색을 원래대로 돌림
+                        notifyItemChanged(select);
+                        // 새로 클릭된 아이템의 배경색을 변경
+                        select = position;
+                        notifyItemChanged(select);
+
+                        callback.onMusicItemClicked(music);
+                    }
                 }
             });
+
+            // 현재 ViewHolder의 위치가 선택된 위치와 일치하는 경우 배경색을 변경
+            if (getBindingAdapterPosition() == select) {
+                itemView.setBackgroundColor(Color.GRAY);
+            } else {
+                itemView.setBackgroundColor(Color.TRANSPARENT);
+            }
         }
     }
 
@@ -77,6 +95,7 @@ public class MusicAdapter extends ListAdapter<MusicModel, MusicAdapter.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull MusicAdapter.ViewHolder holder, int position) {
+
         holder.bind(getItem(position));
     }
 
