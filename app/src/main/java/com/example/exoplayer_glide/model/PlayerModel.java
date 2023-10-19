@@ -1,5 +1,7 @@
 package com.example.exoplayer_glide.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +44,13 @@ public class PlayerModel {
     }
 
     public void updateCurrentPosition(MusicModel musicModel) {
-        currentPosition = playMusicList.indexOf(musicModel);
+//         currentPosition = playMusicList.indexOf(musicModel);
+
+        Log.d("!@!@", "");
+
+
+
+
     }
 
     public MusicModel nextMusic() {

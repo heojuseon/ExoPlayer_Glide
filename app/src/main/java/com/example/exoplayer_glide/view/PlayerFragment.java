@@ -48,6 +48,7 @@ public class PlayerFragment extends Fragment {
     private PlayerModel model = new PlayerModel();
     private ExoPlayer player;
 
+
     ImageView playControlImageView, coverImageView, skipNextImageView, skipPrevImageView, playListImageView;
     TextView trackTextView, artistTextView, playTimeTextView, totalTimeTextView;
     PlayerView playerView;
@@ -81,7 +82,7 @@ public class PlayerFragment extends Fragment {
         trackTextView = view.findViewById(R.id.track_text_view);
         artistTextView = view.findViewById(R.id.artist_text_view);
         playListSeekBar = view.findViewById(R.id.play_list_seek_bar);
-        playListSeekBar = view.findViewById(R.id.player_seek_bar);
+        playerSeekBar = view.findViewById(R.id.player_seek_bar);
         playTimeTextView = view.findViewById(R.id.play_time_text_view);
         totalTimeTextView = view.findViewById(R.id.total_time_text_view);
         playListGroup = view.findViewById(R.id.play_list_group);
@@ -105,6 +106,7 @@ public class PlayerFragment extends Fragment {
 
 
     private void initSeekBar() {
+
         playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -160,6 +162,7 @@ public class PlayerFragment extends Fragment {
 
 
     private void initPlayView() {
+        player = new ExoPlayer.Builder(requireContext()).build();
         playerView.setPlayer(player);
         player.addListener(new Player.Listener() {
             @Override
@@ -236,6 +239,7 @@ public class PlayerFragment extends Fragment {
     private void playMusic(MusicModel music) {
         model.updateCurrentPosition(music);
         if (player != null) {
+            Log.d("@!@", ""+model.getCurrentPosition());
             player.seekTo(model.getCurrentPosition(), 0);
             player.play();
         }
@@ -261,7 +265,7 @@ public class PlayerFragment extends Fragment {
 
     private void getVideoListFromServer() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://run.mocky.io/")
+                .baseUrl("https://80d6e5ae-659a-46e6-9247-9b5248706bbc.mock.pstmn.io/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -271,7 +275,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onResponse(Call<MusicDto> call, Response<MusicDto> response) {
                 Log.d("PlayerFragment", String.valueOf(response.body()));
-
+                Log.d("PlayerFragment", "API Success");
                 MusicDto musicDto = response.body();
                 if (musicDto != null) {
 //                    model = musicDto.mapper();
@@ -289,26 +293,39 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setMusicList(List<MusicModel> modelList) {
-        if (player == null) return;
-        player = new ExoPlayer.Builder(requireContext()).build();
-        playerView.setPlayer(player);
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onIsPlayingChanged(boolean isPlaying) {
-                Player.Listener.super.onIsPlayingChanged(isPlaying);
-            }
-        });
+//        if (player == null) return;
+////        player = new ExoPlayer.Builder(requireContext()).build();
+//        playerView.setPlayer(player);
+//        player.addListener(new Player.Listener() {
+//            @Override
+//            public void onIsPlayingChanged(boolean isPlaying) {
+//                Player.Listener.super.onIsPlayingChanged(isPlaying);
+//            }
+//        });
+//
+//        MediaItem[] mediaItems = new MediaItem[modelList.size()];
+//        for (int i = 0; i < modelList.size(); i++) {
+//            MediaItem mediaItem = new MediaItem.Builder()
+//                    .setMediaId(String.valueOf(modelList.get(i).getId()))
+//                    .setUri(modelList.get(i).getStreamUrl())
+//                    .build();
+//            mediaItems[i] = mediaItem;
+//        }
+//        player.addMediaItems(Arrays.asList(mediaItems));
+//        player.prepare();
 
-        MediaItem[] mediaItems = new MediaItem[modelList.size()];
-        for (int i = 0; i < modelList.size(); i++) {
-            MediaItem mediaItem = new MediaItem.Builder()
-                    .setMediaId(String.valueOf(modelList.get(i).getId()))
-                    .setUri(modelList.get(i).getStreamUrl())
-                    .build();
-            mediaItems[i] = mediaItem;
+        if (player != null) {
+            MediaItem[] mediaItems = new MediaItem[modelList.size()];
+            for (int i = 0; i < modelList.size(); i++) {
+                MediaItem mediaItem = new MediaItem.Builder()
+                        .setMediaId(String.valueOf(modelList.get(i).getId()))
+                        .setUri(modelList.get(i).getStreamUrl())
+                        .build();
+                mediaItems[i] = mediaItem;
+            }
+            player.addMediaItems(Arrays.asList(mediaItems));
+            player.prepare();
         }
-        player.addMediaItems(Arrays.asList(mediaItems));
-        player.prepare();
     }
 
     @Override
@@ -333,5 +350,6 @@ public class PlayerFragment extends Fragment {
             mainHandler.removeCallbacks(updateSeekRunnable);
         }
     }
+
 
 }

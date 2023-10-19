@@ -2,6 +2,7 @@ package com.example.exoplayer_glide.adapter;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ public class MusicAdapter extends ListAdapter<MusicModel, MusicAdapter.ViewHolde
         }
 
         public void bind(MusicModel music) {
+            Log.d("!@!@!@", ""+music.artist + ", " +music.hashCode());
+
             track.setText(music.getTrack());
             artist.setText(music.getArtist());
 
