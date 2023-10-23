@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,12 +50,14 @@ public class PlayerFragment extends Fragment {
 
     ImageView playControlImageView, coverImageView, skipNextImageView, skipPrevImageView, playListImageView;
     TextView trackTextView, artistTextView, playTimeTextView, totalTimeTextView;
-    PlayerView playerView;
+    View playerView;
     RecyclerView playListRecyclerView;
     SeekBar playListSeekBar, playerSeekBar;
     Group playListGroup, playerViewGroup;
 
 
+
+    //seeK의 현재 플레이되고 있는 시간을 알기 위해 handler 설정
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final Runnable updateSeekRunnable = new Runnable() {
         @Override
@@ -72,34 +73,33 @@ public class PlayerFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_player, container, false);
 
-        playerView = view.findViewById(R.id.player_view);
-        playListRecyclerView = view.findViewById(R.id.play_list_recycler_view);
-        playControlImageView = view.findViewById(R.id.play_control_image_view);
-        coverImageView = view.findViewById(R.id.cover_image_view);
-        skipNextImageView = view.findViewById(R.id.skip_next_image_view);
-        skipPrevImageView = view.findViewById(R.id.skip_prev_image_view);
-        playListImageView  = view.findViewById(R.id.play_list_image_view);
-        trackTextView = view.findViewById(R.id.track_text_view);
-        artistTextView = view.findViewById(R.id.artist_text_view);
-        playListSeekBar = view.findViewById(R.id.play_list_seek_bar);
-        playerSeekBar = view.findViewById(R.id.player_seek_bar);
-        playTimeTextView = view.findViewById(R.id.play_time_text_view);
-        totalTimeTextView = view.findViewById(R.id.total_time_text_view);
-        playListGroup = view.findViewById(R.id.play_list_group);
-        playerViewGroup = view.findViewById(R.id.player_view_group);
+        findID(view);
+
 
         return view;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //목록에서 클릭시 재생화면
         initPlayView();
+
+        //하단 왼쪽 화면에 재생 목록 클릭 이벤트
         initPlayListButton();
+
+        //각각의 컨트롤 버튼 구현 메소드
         initPlayControlButtons();
+
+        //메인 재생화면에서 시크바 구현 메소드
         initSeekBar();
+
+        //메인에 뿌려질 리스트 목록 메소드
         initRecyclerView();
+
+        //api 통신 메소드
         getVideoListFromServer();
     }
 
@@ -121,7 +121,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (player != null) {
-                    player.seekTo(seekBar.getProgress() * 1000L);
+                    player.seekTo(seekBar.getProgress() * 1000L);   //밀리초 단위로 위치를 받아서 해당 위치에서 재생을 시작하거나 이동
                 }
             }
         });
@@ -132,7 +132,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (player != null) {
-                    if (player.isPlaying()) {
+                    if (player.isPlaying()) {   //ExoPlayer 의 isPlaying 함수를 사용하여 true / faluse 시 pase()함수나, play()함수 실행
                         player.pause();
                     } else {
                         player.play();
@@ -163,7 +163,7 @@ public class PlayerFragment extends Fragment {
 
     private void initPlayView() {
         player = new ExoPlayer.Builder(requireContext()).build();
-        playerView.setPlayer(player);
+//        playerView.setPlayer(player);
         player.addListener(new Player.Listener() {
             @Override
             public void onIsPlayingChanged(boolean isPlaying) {
@@ -178,8 +178,8 @@ public class PlayerFragment extends Fragment {
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
                 if (mediaItem == null) return;
-                int newIndex = Integer.parseInt(mediaItem.mediaId);
-                model.setCurrentPosition(newIndex);
+                int newIndex = Integer.parseInt(mediaItem.mediaId);     //newIndex로 mediaId 값 지정
+                model.setCurrentPosition(newIndex); //지정했던 mediaId를 가져와서 갱신
                 adapter.submitList(model.getAdapterModels());
                 playListRecyclerView.scrollToPosition(model.getCurrentPosition());
                 updatePlayerView(model.currentMusicModel());
@@ -228,7 +228,7 @@ public class PlayerFragment extends Fragment {
     private void initRecyclerView() {
         adapter = new MusicAdapter(new MusicAdapter.OnMusicItemClickListener() {
             @Override
-            public void onMusicItemClicked(MusicModel music) {
+            public void onMusicItemClicked(MusicModel music) {  //리스트에서 해당 노래(item) 클릭시 노래 재생
                 playMusic(music);
             }
         });
@@ -245,7 +245,7 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    private void initPlayListButton() {
+    private void initPlayListButton() {         //클릭시 해당 노래의 제목, 가수명, 이미지 등등 그룹화 한 UI들 보이게 설정
         playListImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -333,5 +333,22 @@ public class PlayerFragment extends Fragment {
         }
     }
 
+    private void findID(View view) {
+        playerView = view.findViewById(R.id.player_view);
+        playListRecyclerView = view.findViewById(R.id.play_list_recycler_view);
+        playControlImageView = view.findViewById(R.id.play_control_image_view);
+        coverImageView = view.findViewById(R.id.cover_image_view);
+        skipNextImageView = view.findViewById(R.id.skip_next_image_view);
+        skipPrevImageView = view.findViewById(R.id.skip_prev_image_view);
+        playListImageView  = view.findViewById(R.id.play_list_image_view);
+        trackTextView = view.findViewById(R.id.track_text_view);
+        artistTextView = view.findViewById(R.id.artist_text_view);
+        playListSeekBar = view.findViewById(R.id.play_list_seek_bar);
+        playerSeekBar = view.findViewById(R.id.player_seek_bar);
+        playTimeTextView = view.findViewById(R.id.play_time_text_view);
+        totalTimeTextView = view.findViewById(R.id.total_time_text_view);
+        playListGroup = view.findViewById(R.id.play_list_group);
+        playerViewGroup = view.findViewById(R.id.player_view_group);
+    }
 
 }
